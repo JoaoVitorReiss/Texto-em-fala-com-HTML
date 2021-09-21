@@ -1,0 +1,36 @@
+body {
+    background-color: rgb(0, 0, 0);
+}
+
+label {
+    color: white;
+}
+
+h1 {
+    color: white;
+}
+
+a {
+    color: blue;
+    text-decoration: none;
+}
+
+p {
+    color: white;
+}
+
+.espace {
+    margin-top: 9px;
+}
+
+.field {
+    margin-top: 8px;
+}
+
+.speech {
+    padding: 15px;
+}
+
+.espace {
+    padding: 4px;
+}

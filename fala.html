@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>TEXTO EM VOZ NO NAVEGADOR</title>
+    <link rel="shortcut icon" href="favicon-16x16.png" type="image/x-icon">
+    <link rel="stylesheet" href="./style.css" />
+
+</head>
+<center>
+
+    <body>
+        <header>
+            <h1>Texto em voz com HTML</h1>
+        </header>
+        <main>
+            <form class="input" id="voice-form">
+                <div class="field">
+                    <center><label for="speech">Digite algo:</label></center>
+                    <input type="text" name="speech" class="speech" required />
+                </div>
+                <div class="field">
+                    <center><label for="voices">Escolha uma voz</label></center>
+                    <select name="voices" id="voices" class="espace"></select>
+                </div>
+                <button class="espace">Falar!</button>
+            </form>
+        </main>
+        <footer>
+            <p>
+                TWITTER 👉<a href="https://twitter.com/mininujao" target="__blank">João Vitor</a>
+            </p>
+        </footer>
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                const form = document.getElementById('voice-form');
+                const input = document.getElementById('speech');
+                const main = document.getElementsByTagName('main')[0];
+                const voiceSelect = document.getElementById('voices');
+                let voices;
+                let currentVoice;
+
+                const populateVoices = () => {
+                    const availableVoices = speechSynthesis.getVoices();
+                    voiceSelect.innerHTML = '';
+
+                    availableVoices.forEach(voice => {
+                        const option = document.createElement('option');
+                        let optionText = `${voice.name} (${voice.lang})`;
+                        if (voice.default) {
+                            optionText += ' [default]';
+                            if (typeof currentVoice === 'undefined') {
+                                currentVoice = voice;
+                                option.selected = true;
+                            }
+                        }
+                        if (currentVoice === voice) {
+                            option.selected = true;
+                        }
+                        option.textContent = optionText;
+                        voiceSelect.appendChild(option);
+                    });
+                    voices = availableVoices;
+                };
+
+                populateVoices();
+                if (speechSynthesis.onvoiceschanged !== undefined) {
+                    speechSynthesis.onvoiceschanged = populateVoices;
+                }
+
+                voiceSelect.addEventListener('change', event => {
+                    const selectedIndex = event.target.selectedIndex;
+                    currentVoice = voices[selectedIndex];
+                });
+
+                form.addEventListener('submit', event => {
+                    event.preventDefault();
+                    const toSay = input.value.trim();
+                    const utterance = new SpeechSynthesisUtterance(toSay);
+                    utterance.voice = currentVoice;
+                    utterance.addEventListener('start', event => {
+                        main.classList.add('speaking');
+                    });
+                    utterance.addEventListener('end', event => {
+                        main.addEventListener(
+                            'animationiteration',
+                            event => {
+                                main.classList.remove('speaking');
+                            }, {
+                                once: true
+                            }
+                        );
+                    });
+                    speechSynthesis.speak(utterance);
+                    input.value = '';
+                });
+            });
+        </script>
+    </body>
+</center>
+
+
+</html>
